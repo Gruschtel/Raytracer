@@ -7,12 +7,12 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="jackson-annotations-2.9.9.jar"/>
-	<classpathentry kind="lib" path="jackson-core-2.9.9.jar"/>
-	<classpathentry kind="lib" path="jackson-databind-2.9.9.jar"/>
-	<classpathentry kind="lib" path="commons-lang3-3.9/commons-lang3-3.9-sources.jar"/>
-	<classpathentry kind="lib" path="commons-lang3-3.9/commons-lang3-3.9-test-sources.jar"/>
-	<classpathentry kind="lib" path="commons-lang3-3.9/commons-lang3-3.9-tests.jar"/>
-	<classpathentry kind="lib" path="commons-lang3-3.9/commons-lang3-3.9.jar"/>
+	<classpathentry kind="lib" path="plugins/jackson/jackson-annotations-2.9.9.jar"/>
+	<classpathentry kind="lib" path="plugins/jackson/jackson-core-2.9.9.jar"/>
+	<classpathentry kind="lib" path="plugins/jackson/jackson-databind-2.9.9.jar"/>
+	<classpathentry kind="lib" path="plugins/commons_lang/commons-lang3-3.9-sources.jar"/>
+	<classpathentry kind="lib" path="plugins/commons_lang/commons-lang3-3.9-test-sources.jar"/>
+	<classpathentry kind="lib" path="plugins/commons_lang/commons-lang3-3.9-tests.jar"/>
+	<classpathentry kind="lib" path="plugins/commons_lang/commons-lang3-3.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

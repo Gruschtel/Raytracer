@@ -43,7 +43,7 @@ public class Raytracer00 implements IRayTracerImplementation {
 
 //			gui.addObject(RTFileReader.read(Obj_Mesh.class, new File(directory + "/data/object2.obj")));
 			gui.addObject(RTFileReader.read(Obj_Mesh.class, new File(directory + "/data/obj_moreMeshes.obj")));
-			gui.addObject(RTFileReader.read(Obj_Mesh.class, new File(directory + "/data/obj_elefant.obj")));
+			gui.addObject(RTFileReader.read(GLTF_Mesh.class, new File(directory + "/data/obj_elefant.gltf")));
 
 //			gui.addObject(RTFileReader.read(Obj_Mesh.class, new File(directory + "/data/sphere1.obj")));
 //			gui.addObject(RTFileReader.read(GLTF_Mesh.class, new File(directory + "/data/simpleTriangle.gltf")));
