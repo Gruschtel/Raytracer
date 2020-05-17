@@ -1,5 +1,7 @@
 package de.fhkl.imst.i.cgma.raytracer.file;
  
+import java.io.File;
+import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.List;
 
@@ -33,5 +35,11 @@ public class RTScene extends RTFile {
 			parent.children.add(this);
 			this.object = object;
 		}
+	}
+
+	@Override
+	protected void readContent(File f) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 }

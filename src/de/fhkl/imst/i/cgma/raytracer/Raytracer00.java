@@ -3,10 +3,10 @@ package de.fhkl.imst.i.cgma.raytracer;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
 
+import de.fhkl.imst.i.cgma.raytracer.file.GLTF_Mesh;
 import de.fhkl.imst.i.cgma.raytracer.file.I_Sphere;
 import de.fhkl.imst.i.cgma.raytracer.file.Obj_Mesh;
 import de.fhkl.imst.i.cgma.raytracer.file.RTFile;
@@ -41,7 +41,17 @@ public class Raytracer00 implements IRayTracerImplementation {
 //		    gui.addObject(RTFileReader.read(I_Sphere.class, new File("data/ikugel.dat")));
 //			gui.addObject(RTFileReader.read(T_Mesh.class, new File("data/dreieck1.dat")));
 
+//			gui.addObject(RTFileReader.read(Obj_Mesh.class, new File(directory + "/data/object2.obj")));
 			gui.addObject(RTFileReader.read(Obj_Mesh.class, new File(directory + "/data/obj_moreMeshes.obj")));
+			gui.addObject(RTFileReader.read(Obj_Mesh.class, new File(directory + "/data/obj_elefant.obj")));
+
+//			gui.addObject(RTFileReader.read(Obj_Mesh.class, new File(directory + "/data/sphere1.obj")));
+//			gui.addObject(RTFileReader.read(GLTF_Mesh.class, new File(directory + "/data/simpleTriangle.gltf")));
+//			gui.addObject(RTFileReader.read(GLTF_Mesh.class, new File(directory + "/data/untitled.gltf")));
+//			gui.addObject(RTFileReader.read(GLTF_Mesh.class, new File(directory + "/data/sphere.gltf")));
+//			gui.addObject(RTFileReader.read(GLTF_Mesh.class, new File(directory + "/data/sphere1.gltf")));
+//			gui.addObject(RTFileReader.read(GLTF_Mesh.class, new File(directory + "/data/elefant1.gltf")));
+//			gui.addObject(RTFileReader.read(GLTF_Mesh.class, new File(directory + "/data/Bender.gltf")));
 
 			objects = gui.getObjects();
 
@@ -145,6 +155,7 @@ public class Raytracer00 implements IRayTracerImplementation {
 		I_Sphere sphere;
 		T_Mesh mesh;
 		Obj_Mesh obj_mesh;
+		GLTF_Mesh gltf_Mesh;
 
 		float[] rv = { rayVx, rayVy, rayVz };
 		float[] re = { rayEx, rayEy, rayEz };
@@ -384,7 +395,6 @@ public class Raytracer00 implements IRayTracerImplementation {
 				if (!bboxHit(obj_mesh, rayEx, rayEy, rayEz, rayVx, rayVy, rayVz))
 					continue;
 
-				// System.out.println("if (scene instanceof Obj_Mesh)");
 
 				float a, rayVn, pen;
 				float[] p1, p2, p3;
@@ -465,6 +475,96 @@ public class Raytracer00 implements IRayTracerImplementation {
 					}
 				}
 
+			} else if (scene instanceof GLTF_Mesh) {
+				gltf_Mesh = (GLTF_Mesh) scene;
+
+				float t;
+				float[] n;
+				float[] ip = new float[3];
+
+				// no bounding box hit? -> next object
+				if (!bboxHit(gltf_Mesh, rayEx, rayEy, rayEz, rayVx, rayVy, rayVz))
+					continue;
+
+
+				float a, rayVn, pen;
+				float[] p1, p2, p3;
+				float[] ai = new float[3];
+
+				for (int i = 0; i < gltf_Mesh.triangles.length; i++) {
+					// get the three vertices
+					p1 = gltf_Mesh.vertices[gltf_Mesh.triangles[i][0]];
+					p2 = gltf_Mesh.vertices[gltf_Mesh.triangles[i][1]];
+					p3 = gltf_Mesh.vertices[gltf_Mesh.triangles[i][2]];
+//
+//					// intermediate version
+//					// calculate normal n and triangle area a
+//					n = new float[3];
+//					a = calculateN(n, p1, p2, p3);
+
+					// fetch precalculated face areas and face normals
+					a = gltf_Mesh.triangleAreas[i];
+					n = gltf_Mesh.triangleNormals[i];
+
+					rayVn = rv[0] * n[0] + rv[1] * n[1] + rv[2] * n[2];
+
+					// backface? => next triangle
+					if (rayVn >= 0)
+						continue;
+					// no intersection point? => next triangle
+					if (Math.abs(rayVn) < 1E-7)
+						continue;
+
+					pen = (p1[0] - rayEx) * n[0] + (p1[1] - rayEy) * n[1] + (p1[2] - rayEz) * n[2];
+
+					// calculate intersection point with plane along the ray
+					t = pen / rayVn;
+
+					// already a closer intersection point? => next triangle
+					if (t >= minT)
+						continue;
+
+					// the intersection point with the plane
+					ip[0] = rayEx + (float) t * rayVx;
+					ip[1] = rayEy + (float) t * rayVy;
+					ip[2] = rayEz + (float) t * rayVz;
+
+					// no intersection point with the triangle? => next
+					// triangle
+					if (!triangleTest(ip, p1, p2, p3, a, ai))
+						continue;
+
+					// from here: t < minT and triangle intersection
+					// I'm the winner until now!
+
+					minT = t;
+					minObjectsIndex = objectsNumber;
+					minIndex = i;
+
+					// prepare everything for shading alternatives
+
+					// the intersection point
+					minIP[0] = ip[0];
+					minIP[1] = ip[1];
+					minIP[2] = ip[2];
+
+					switch (gltf_Mesh.fgp) {
+					case 'f':
+					case 'F':
+
+//						// the normal is the surface normal
+//						minN[0] = n[0];
+//						minN[1] = n[1];
+//						minN[2] = n[2];
+//
+//						// the material is the material of the first triangle point
+//						int matIndex = obj_mesh.verticesMat[obj_mesh.triangles[minIndex][0]];
+//						minMaterial = obj_mesh.materials[matIndex];
+//						minMaterialN = obj_mesh.materialsN[matIndex];
+
+						break;
+					}
+				}
 			} else
 				continue; // return null;
 		}
@@ -535,15 +635,22 @@ public class Raytracer00 implements IRayTracerImplementation {
 			case 'f':
 			case 'F':
 
-//			// illumination can be calculated here
-//			// this is a variant between flat und phong shading
-//			return phongIlluminate(minMaterial, minMaterialN, l, minN, v, Ia, Ids);
-
-				// System.out.println(obj_mesh.triangleColors[minIndex][0]);
-				// lookup triangle color of triangle hit
-
 				return new Color(obj_mesh.triangleColors[minIndex][0], obj_mesh.triangleColors[minIndex][1],
 						obj_mesh.triangleColors[minIndex][2]);
+			}
+		} else if (objects.get(minObjectsIndex).getHeader() == "GLTF") {
+
+			gltf_Mesh = ((GLTF_Mesh) objects.get(minObjectsIndex));
+
+			switch (gltf_Mesh.fgp) {
+			case 'f':
+			case 'F':
+
+				return new Color(gltf_Mesh.triangleColors[minIndex][0], gltf_Mesh.triangleColors[minIndex][1],
+						gltf_Mesh.triangleColors[minIndex][2]);
+
+			default:
+				break;
 			}
 		}
 		return null;
@@ -650,7 +757,6 @@ public class Raytracer00 implements IRayTracerImplementation {
 		ai[1] = calculateN(tmp, p, p2, p3) / a;
 		ai[2] = calculateN(tmp, p1, p, p3) / a;
 
-		// System.out.println(Arrays.toString(ai));
 
 		if (ai[0] + ai[1] + ai[2] <= (1 + 1e-5) && ai[0] + ai[1] + ai[2] >= (1 - 1e-5))
 			return true;
@@ -763,6 +869,20 @@ public class Raytracer00 implements IRayTracerImplementation {
 				Obj_Mesh mesh = (Obj_Mesh) scene;
 
 				// init memory
+				mesh.triangleNormals = new float[mesh.triangles.length][3];
+				mesh.triangleAreas = new float[mesh.triangles.length];
+
+				for (int i = 0; i < mesh.triangles.length; i++) {
+					p1 = mesh.vertices[(mesh.triangles[i][0])];
+					p2 = mesh.vertices[(mesh.triangles[i][1])];
+					p3 = mesh.vertices[(mesh.triangles[i][2])];
+
+					// calculate and store triangle normal n and triangle area a
+					mesh.triangleAreas[i] = calculateN(mesh.triangleNormals[i], p1, p2, p3);
+				}
+			} else if (scene.getHeader() == "GLTF") {
+
+				GLTF_Mesh mesh = (GLTF_Mesh) scene;
 				mesh.triangleNormals = new float[mesh.triangles.length][3];
 				mesh.triangleAreas = new float[mesh.triangles.length];
 
@@ -1026,8 +1146,78 @@ public class Raytracer00 implements IRayTracerImplementation {
 
 					break;
 				}
+			} else if (scene.getHeader() == "GLTF") {
+				GLTF_Mesh gltf_mesh = (GLTF_Mesh) scene;
+
+				switch (gltf_mesh.fgp) {
+				case 'f':
+				case 'F':
+					// for flat-shading: initialize and calculate triangle
+					// colors
+					gltf_mesh.triangleColors = new float[gltf_mesh.triangles.length][3];
+
+					rayEx = 0.0f;
+					rayEy = 0.0f;
+					rayEz = 0.0f;
+
+					// loop over all triangles
+					for (int i = 0; i < gltf_mesh.triangles.length; i++) {
+						// the intersection point is the first vertex of the
+						// triangle
+						ip = gltf_mesh.vertices[gltf_mesh.triangles[i][0]];
+
+						// the material is the material of the first triangle
+						// point
+						matIndex = gltf_mesh.verticesMat[gltf_mesh.triangles[i][0]];
+						material = gltf_mesh.materials[matIndex];
+						materialN = gltf_mesh.materialsN[matIndex];
+
+						// x, y, z: view coordinates are intersection point
+						x = ip[0];
+						y = ip[1];
+						z = ip[2];
+
+						// ray vector
+						rayVx = x - rayEx;
+						rayVy = y - rayEy;
+						rayVz = z - rayEz;
+
+						// fetch precalculated face normal
+						n = gltf_mesh.triangleNormals[i];
+
+						rayVn = rayVx * n[0] + rayVy * n[1] + rayVz * n[2];
+
+						// backface? => next triangle
+						if (rayVn >= 0)
+							continue;
+
+						// light vector at the intersection point
+						l[0] = ICenter[0] - ip[0];
+						l[1] = ICenter[1] - ip[1];
+						l[2] = ICenter[2] - ip[2];
+						normalize(l);
+
+						// viewing vector at intersection point
+						v[0] = -rayVx;
+						v[1] = -rayVy;
+						v[2] = -rayVz;
+						normalize(v);
+
+						// illuminate
+						color = phongIlluminate(material, materialN, l, n, v, Ia, Ids);
+
+						// write color to triangle
+						gltf_mesh.triangleColors[i][0] = color.getRed() / 255f;
+						gltf_mesh.triangleColors[i][1] = color.getGreen() / 255f;
+						gltf_mesh.triangleColors[i][2] = color.getBlue() / 255f;
+
+					}
+
+					break;
+				}
 			}
 		}
+
 		System.out.println("Vorverarbeitung 2 beendet");
 	}
 

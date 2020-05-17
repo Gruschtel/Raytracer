@@ -12,6 +12,7 @@ public abstract class RTFile {
 	public abstract String getHeader();
 
 	protected abstract void readContent(LineNumberReader f) throws IOException;
+	protected abstract void readContent(File f) throws IOException;
 
 	protected String fileName;
 
@@ -26,6 +27,7 @@ public abstract class RTFile {
 			put("IMPLICIT_SPHERE", I_Sphere.class);
 			put("SCENE_GRAPH", RTScene.class);
 			put("Obj", Obj_Mesh.class);
+			put("glTF", GLTF_Mesh.class);
 		}
 	};
 
@@ -41,6 +43,8 @@ public abstract class RTFile {
 			//
 			if (getBaseType(f.getName()).equals("obj"))
 				return Obj_Mesh.class;
+			if (getBaseType(f.getName()).equals("gltf"))
+				return GLTF_Mesh.class;
 			if (classMapping.containsKey(header))
 				return classMapping.get(header);
 			return null;
@@ -77,10 +81,13 @@ public abstract class RTFile {
 			//
 			// Dateien des Typs .obj werden in der Klasse Obj_Mesh auf korrektheit getestet
 			//
-			if (getBaseType(f.getName()).equals("obj")) {
-				// nothing
-			} else if (!readLine(br).toLowerCase().equals(result.getHeader().toLowerCase())
-					&& !getBaseType(f.getName()).equals("obj"))
+
+			if (getBaseType(f.getName()).equals("gltf")) {
+				result.readContent(f);
+				return result;
+			} else if (getBaseType(f.getName()).equals("obj")) {
+
+			} else if (!readLine(br).toLowerCase().equals(result.getHeader().toLowerCase()))
 				throw new IOException("Ungültiger header");
 
 			result.readContent(br);

@@ -238,6 +238,7 @@ public class RayTracerGui implements DropTargetListener {
 			//
 			fc.addChoosableFileFilter(new ExtensionFilter(".dat", "DAT Dateien"));
 			fc.addChoosableFileFilter(new ExtensionFilter(".obj", "OBJ Dateien"));
+			fc.addChoosableFileFilter(new ExtensionFilter(".gltf", "GLTF Dateien"));
 			int ret = fc.showOpenDialog(window);
 			if (ret == JFileChooser.APPROVE_OPTION) {
 				try {

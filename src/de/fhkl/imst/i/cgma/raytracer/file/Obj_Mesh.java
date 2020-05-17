@@ -36,6 +36,7 @@ public class Obj_Mesh extends RT_Object {
 	public List<int[]> facesVN; // Faces = triangles
 
 	public List<int[]> verticesMatList;
+	public List<int[]> MatCounterList;
 	//
 	public float[][] materials;
 	public int[] materialsN;
@@ -78,7 +79,6 @@ public class Obj_Mesh extends RT_Object {
 			max[2] = max[2] < f[2] ? f[2] : max[2];
 		}
 
-		System.out.println(min[0] + " " + min[1] + " " + min[2] + " " + max[0] + " " + max[1] + " " + max[2]);
 	}
 
 	@Override
@@ -97,6 +97,7 @@ public class Obj_Mesh extends RT_Object {
 		//
 		verticesList = new ArrayList<float[]>();
 		verticesMatList = new ArrayList<int[]>();
+		MatCounterList = new ArrayList<int[]>();
 		vertexNormalsList = new ArrayList<float[]>();
 		facesV = new ArrayList<int[]>();
 		facesVN = new ArrayList<int[]>();
@@ -107,6 +108,9 @@ public class Obj_Mesh extends RT_Object {
 		pMtllib = new ArrayList<String>();
 		pPrimitvType = new ArrayList<String>();
 		pUsemtl = new ArrayList<String>();
+
+		// temp
+		int temp_matCounter = 0;
 
 		//
 		// Datei Informationen lesen
@@ -169,6 +173,8 @@ public class Obj_Mesh extends RT_Object {
 			else if (identifier.equals("usemtl")) {
 				pUsemtl.add(st.nextToken());
 				boolean foundMat = false;
+
+				MatCounterList.add(new int[] { facesV.size() });
 
 				// n
 				Ns.add(new float[] { 10f });
@@ -248,7 +254,6 @@ public class Obj_Mesh extends RT_Object {
 			//
 			else if (identifier.equals("o")) {
 				pPrimitvType.add(st.nextToken());
-				// System.out.println(pPrimitvType);
 			}
 		}
 
@@ -265,15 +270,27 @@ public class Obj_Mesh extends RT_Object {
 			vertices[i] = new float[verticesList.get(i).length];
 
 			vertices[i][0] = verticesList.get(i)[0];
-			vertices[i][1] = -verticesList.get(i)[1];
-			vertices[i][2] = -verticesList.get(i)[2];
+			vertices[i][1] = verticesList.get(i)[1];
+			vertices[i][2] = verticesList.get(i)[2];
 		}
-		System.out.println("vertices");
-		System.out.println(Arrays.deepToString(vertices));
 
-		verticesMat = new int[verticesMatList.size()];
+		//
+		// Material
+		//
+		verticesMat = new int[verticesList.size()];
 		for (int i = 0; i < verticesList.size(); i++) {
-			verticesMat[i] = verticesMatList.get(i)[0];
+			verticesMat[i] = 0;
+		}
+
+		//
+		// Update
+		//
+		for (int i = 0; i < MatCounterList.size(); i++) {
+			for (int a = MatCounterList.get(i)[0]; a < facesV.size() - 1; a++) {
+				for (int b = 0; b < 1; b++) {
+					verticesMat[facesV.get(a)[b] - 1] = i;
+				}
+			}
 		}
 
 		//
@@ -286,8 +303,6 @@ public class Obj_Mesh extends RT_Object {
 				vertexNormals[i][j] = vertexNormalsList.get(i)[j];
 			}
 		}
-		System.out.println("vertexNormals");
-		System.out.println(Arrays.deepToString(vertexNormals));
 
 		//
 		// faces to triangels
@@ -303,8 +318,6 @@ public class Obj_Mesh extends RT_Object {
 				triangles[i][j] = facesV.get(i)[j] - 1;
 			}
 		}
-		System.out.println("triangles");
-		System.out.println(Arrays.deepToString(triangles));
 
 		//
 		// Material
@@ -314,15 +327,11 @@ public class Obj_Mesh extends RT_Object {
 			materials[i] = new float[] { Ka.get(i)[0], Ka.get(i)[1], Ka.get(i)[2], Kd.get(i)[0], Kd.get(i)[1],
 					Kd.get(i)[2], Ks.get(i)[0], Ks.get(i)[1], Ks.get(i)[2] };
 		}
-		System.out.println("materials");
-		System.out.println(Arrays.deepToString(materials));
 
 		materialsN = new int[textureCounter];
 		for (int i = 0; i < textureCounter; i++) {
 			materialsN[i] = (int) Ns.get(i)[0];
 		}
-		System.out.println();
-		System.out.println(Arrays.toString(materialsN));
 
 		// BBox berechnen
 		calcBoundingBox();
@@ -350,5 +359,11 @@ public class Obj_Mesh extends RT_Object {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	protected void readContent(File f) throws IOException {
+		// TODO Auto-generated method stub
+
 	}
 }

@@ -1,5 +1,6 @@
 package de.fhkl.imst.i.cgma.raytracer.file;
  
+import java.io.File;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.regex.Matcher;
@@ -55,4 +56,10 @@ public class I_Sphere extends RT_Object {
 			"(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+) +([0-9]+)";
 	private static final String paramterRegex =
 			"(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+) +(\\-?[0-9]+\\.[0-9]+)";
+
+	@Override
+	protected void readContent(File f) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
 }

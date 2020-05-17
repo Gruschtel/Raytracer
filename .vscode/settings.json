@@ -1,0 +1,10 @@
+{
+    "files.exclude": {
+        "**/.classpath": false,
+        "**/.project": false,
+        "**/.settings": false,
+        "**/.factorypath": true
+    },
+    "maven.view": "flat",
+    "java.dependency.packagePresentation": "flat"
+}
