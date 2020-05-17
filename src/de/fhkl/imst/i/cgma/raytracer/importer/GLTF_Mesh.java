@@ -1,4 +1,4 @@
-package de.fhkl.imst.i.cgma.raytracer.file;
+package de.fhkl.imst.i.cgma.raytracer.importer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -20,6 +20,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.fhkl.imst.i.cgma.raytracer.file.RT_Object;
 
 /**
  * GLTF_Mesh

@@ -8,6 +8,10 @@ import java.io.LineNumberReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.fhkl.imst.i.cgma.raytracer.importer.GLTF_Mesh;
+import de.fhkl.imst.i.cgma.raytracer.importer.Obj_Mesh;
+import de.fhkl.imst.i.cgma.raytracer.importer.T_Mesh;
+
 public abstract class RTFile {
 	public abstract String getHeader();
 

@@ -6,15 +6,15 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.Vector;
 
-import de.fhkl.imst.i.cgma.raytracer.file.GLTF_Mesh;
 import de.fhkl.imst.i.cgma.raytracer.file.I_Sphere;
-import de.fhkl.imst.i.cgma.raytracer.file.Obj_Mesh;
 import de.fhkl.imst.i.cgma.raytracer.file.RTFile;
 import de.fhkl.imst.i.cgma.raytracer.file.RTFileReader;
 import de.fhkl.imst.i.cgma.raytracer.file.RT_Object;
-import de.fhkl.imst.i.cgma.raytracer.file.T_Mesh;
 import de.fhkl.imst.i.cgma.raytracer.gui.IRayTracerImplementation;
 import de.fhkl.imst.i.cgma.raytracer.gui.RayTracerGui;
+import de.fhkl.imst.i.cgma.raytracer.importer.GLTF_Mesh;
+import de.fhkl.imst.i.cgma.raytracer.importer.Obj_Mesh;
+import de.fhkl.imst.i.cgma.raytracer.importer.T_Mesh;
 
 public class Raytracer00 implements IRayTracerImplementation {
 	// viewing volume with infinite end

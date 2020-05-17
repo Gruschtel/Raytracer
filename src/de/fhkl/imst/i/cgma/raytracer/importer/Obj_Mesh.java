@@ -1,4 +1,4 @@
-package de.fhkl.imst.i.cgma.raytracer.file;
+package de.fhkl.imst.i.cgma.raytracer.importer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import de.fhkl.imst.i.cgma.raytracer.file.RT_Object;
 
 public class Obj_Mesh extends RT_Object {
 

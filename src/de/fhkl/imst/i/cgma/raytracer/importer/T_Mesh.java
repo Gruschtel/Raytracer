@@ -1,10 +1,12 @@
-package de.fhkl.imst.i.cgma.raytracer.file;
+package de.fhkl.imst.i.cgma.raytracer.importer;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import de.fhkl.imst.i.cgma.raytracer.file.RT_Object;
 
 public class T_Mesh extends RT_Object {
 	// read information
